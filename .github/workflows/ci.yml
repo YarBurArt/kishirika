@@ -1,0 +1,58 @@
+name: Go CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests with race cond checks
+        run: go test -v -race -p 1 -coverprofile=coverage.out ./...
+
+  lint-with-sec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          # pinned to the v1 series: .golangci.yml uses the v1 schema
+          # (linters-settings / issues.exclude-rules), which v2 rejects
+          version: v1.64.8
+          install-mode: goinstall
+          args: --timeout=3m
+
+  semgrep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep Analysis
+        uses: returntocorp/semgrep-action@v1
+        continue-on-error: true  # gosec already in pre-commit
+        with:
+          config: p/golang
+          extra_args: --metrics=off
