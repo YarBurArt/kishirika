@@ -1,0 +1,292 @@
+{
+  "checks": [
+    {
+      "key": "dev.tty.ldisc_autoload",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "stop unprivileged users loading line disciplines (TIOCSTI injection)"
+    },
+    {
+      "key": "fs.protected_fifos",
+      "expect": {
+        "gte": 2
+      },
+      "severity": "medium",
+      "rationale": "block FIFO creation in sticky world-writable directories"
+    },
+    {
+      "key": "fs.protected_hardlinks",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "medium",
+      "rationale": "block hardlink creation to files the caller does not own"
+    },
+    {
+      "key": "fs.protected_regular",
+      "expect": {
+        "gte": 2
+      },
+      "severity": "medium",
+      "rationale": "block regular file creation in sticky world-writable directories"
+    },
+    {
+      "key": "fs.protected_symlinks",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "medium",
+      "rationale": "block symlink following in sticky world-writable directories"
+    },
+    {
+      "key": "fs.suid_dumpable",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "do not dump core from setuid processes"
+    },
+    {
+      "key": "kernel.core_uses_pid",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "info",
+      "rationale": "append the pid to core dumps so they cannot overwrite each other"
+    },
+    {
+      "key": "kernel.ctrl-alt-del",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "Ctrl-Alt-Del triggers a clean reboot instead of an immediate one"
+    },
+    {
+      "key": "kernel.dmesg_restrict",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "medium",
+      "rationale": "keep the kernel ring buffer away from unprivileged users"
+    },
+    {
+      "key": "kernel.kptr_restrict",
+      "expect": {
+        "gte": 2
+      },
+      "severity": "medium",
+      "rationale": "hide kernel symbol addresses from unprivileged users"
+    },
+    {
+      "key": "kernel.modules_disabled",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "block all module loading after boot; breaks loading drivers at runtime"
+    },
+    {
+      "key": "kernel.perf_event_paranoid",
+      "expect": {
+        "gte": 2
+      },
+      "severity": "high",
+      "rationale": "restrict unprivileged perf_event_open, a frequent kernel attack surface"
+    },
+    {
+      "key": "kernel.randomize_va_space",
+      "expect": {
+        "eq": 2
+      },
+      "severity": "high",
+      "rationale": "ASLR enabled for all mappings"
+    },
+    {
+      "key": "kernel.sysrq",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "magic SysRq can reboot or dump memory from the console"
+    },
+    {
+      "key": "kernel.unprivileged_bpf_disabled",
+      "expect": {
+        "gte": 1
+      },
+      "severity": "high",
+      "rationale": "unprivileged BPF has produced repeated local privilege escalation bugs"
+    },
+    {
+      "key": "kernel.yama.ptrace_scope",
+      "expect": {
+        "gte": 1
+      },
+      "severity": "medium",
+      "rationale": "restrict ptrace to descendants of the tracer"
+    },
+    {
+      "key": "net.core.bpf_jit_harden",
+      "expect": {
+        "gte": 2
+      },
+      "severity": "medium",
+      "rationale": "harden the BPF JIT against spraying attacks; root-only readable"
+    },
+    {
+      "key": "net.ipv4.conf.all.accept_redirects",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "ignore ICMP redirects, a routing-table poisoning vector"
+    },
+    {
+      "key": "net.ipv4.conf.all.accept_source_route",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "drop source-routed packets"
+    },
+    {
+      "key": "net.ipv4.conf.all.bootp_relay",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "do not relay BOOTP"
+    },
+    {
+      "key": "net.ipv4.conf.all.forwarding",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "do not route packets between interfaces"
+    },
+    {
+      "key": "net.ipv4.conf.all.log_martians",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "log packets with impossible source addresses"
+    },
+    {
+      "key": "net.ipv4.conf.all.mc_forwarding",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "do not forward multicast"
+    },
+    {
+      "key": "net.ipv4.conf.all.proxy_arp",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "do not answer ARP for other hosts"
+    },
+    {
+      "key": "net.ipv4.conf.all.rp_filter",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "strict reverse-path filtering"
+    },
+    {
+      "key": "net.ipv4.conf.all.send_redirects",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "low",
+      "rationale": "do not act as an ICMP redirector"
+    },
+    {
+      "key": "net.ipv4.conf.default.accept_redirects",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "same for interfaces created later"
+    },
+    {
+      "key": "net.ipv4.conf.default.accept_source_route",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "same for interfaces created later"
+    },
+    {
+      "key": "net.ipv4.conf.default.log_martians",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "same for interfaces created later"
+    },
+    {
+      "key": "net.ipv4.icmp_echo_ignore_broadcasts",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "ignore broadcast pings (smurf amplification)"
+    },
+    {
+      "key": "net.ipv4.icmp_ignore_bogus_error_responses",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "low",
+      "rationale": "ignore malformed ICMP error replies"
+    },
+    {
+      "key": "net.ipv4.tcp_syncookies",
+      "expect": {
+        "eq": 1
+      },
+      "severity": "medium",
+      "rationale": "SYN cookies survive SYN floods"
+    },
+    {
+      "key": "net.ipv6.conf.all.accept_redirects",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "ignore IPv6 redirects"
+    },
+    {
+      "key": "net.ipv6.conf.all.accept_source_route",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "drop IPv6 source-routed packets"
+    },
+    {
+      "key": "net.ipv6.conf.default.accept_redirects",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "same for interfaces created later"
+    },
+    {
+      "key": "net.ipv6.conf.default.accept_source_route",
+      "expect": {
+        "eq": 0
+      },
+      "severity": "medium",
+      "rationale": "same for interfaces created later"
+    }
+  ]
+}

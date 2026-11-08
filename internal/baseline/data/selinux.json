@@ -1,0 +1,604 @@
+{
+  "checks": [
+    {
+      "key": "boinc_execmem",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Determine whether boinc can execmem/execstack."
+    },
+    {
+      "key": "cluster_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow cluster administrative domains to connect to the network using TCP."
+    },
+    {
+      "key": "cluster_use_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow cluster administrative cluster domains memcheck-amd64- to use executable memory"
+    },
+    {
+      "key": "cobbler_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether Cobbler can connect to the network using TCP."
+    },
+    {
+      "key": "collectd_tcp_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether collectd can connect to the network using TCP."
+    },
+    {
+      "key": "condor_tcp_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether Condor can connect to the network using TCP."
+    },
+    {
+      "key": "conman_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether conman can connect to all TCP ports"
+    },
+    {
+      "key": "cups_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow cups execmem/execstack"
+    },
+    {
+      "key": "deny_execmem",
+      "expect": "on",
+      "severity": "medium",
+      "rationale": "Deny user domains applications to map a memory region as both executable and writable"
+    },
+    {
+      "key": "deny_ptrace",
+      "expect": "on",
+      "severity": "medium",
+      "rationale": "Deny any process from ptracing or debugging any other processes."
+    },
+    {
+      "key": "exim_can_connect_db",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether exim can connect to databases."
+    },
+    {
+      "key": "fenced_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether fenced can connect to the TCP network."
+    },
+    {
+      "key": "ftpd_connect_all_unreserved",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether ftpd can connect to all unreserved ports."
+    },
+    {
+      "key": "ftpd_connect_db",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether ftpd can connect to databases over the TCP network."
+    },
+    {
+      "key": "ftpd_use_passive_mode",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether ftpd can bind to all unreserved ports for passive mode."
+    },
+    {
+      "key": "git_session_bind_all_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether Git session daemon can bind TCP sockets to all unreserved ports."
+    },
+    {
+      "key": "glance_api_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether glance-api can connect to all TCP ports"
+    },
+    {
+      "key": "glance_use_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow glance domain to use executable memory and executable stack"
+    },
+    {
+      "key": "gluster_anon_write",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Gluster ###"
+    },
+    {
+      "key": "gluster_export_all_ro",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow glusterfsd to share any file/directory read only."
+    },
+    {
+      "key": "gluster_export_all_rw",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow glusterfsd to share any file/directory read/write"
+    },
+    {
+      "key": "gluster_use_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow glusterd_t domain to use executable memory"
+    },
+    {
+      "key": "haproxy_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether haproxy can connect to all TCP ports."
+    },
+    {
+      "key": "httpd_can_connect_ftp",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to act as a FTP client connecting to the ftp port and ephemeral ports"
+    },
+    {
+      "key": "httpd_can_connect_ldap",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to connect to the ldap port"
+    },
+    {
+      "key": "httpd_can_connect_mythtv",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow http daemon to connect to mythtv"
+    },
+    {
+      "key": "httpd_can_connect_zabbix",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow http daemon to connect to zabbix"
+    },
+    {
+      "key": "httpd_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow HTTPD scripts and modules to connect to the network using TCP."
+    },
+    {
+      "key": "httpd_can_network_connect_cobbler",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow HTTPD scripts and modules to connect to cobbler over the network."
+    },
+    {
+      "key": "httpd_can_network_connect_db",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow HTTPD scripts and modules to connect to databases over the network."
+    },
+    {
+      "key": "httpd_can_network_memcache",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to connect to memcache server"
+    },
+    {
+      "key": "httpd_can_network_relay",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to act as a relay"
+    },
+    {
+      "key": "httpd_enable_ftp_server",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to act as a FTP server by listening on the ftp port."
+    },
+    {
+      "key": "httpd_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd scripts and modules execmem/execstack"
+    },
+    {
+      "key": "httpd_graceful_shutdown",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow HTTPD to connect to port 80 for graceful shutdown"
+    },
+    {
+      "key": "httpd_use_openstack",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to access openstack ports"
+    },
+    {
+      "key": "httpd_use_sasl",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow httpd to connect to sasl"
+    },
+    {
+      "key": "icecast_use_any_tcp_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether icecast can listen on and connect to any TCP port."
+    },
+    {
+      "key": "irc_use_any_tcp_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether irc clients can listen on and connect to any unreserved TCP ports."
+    },
+    {
+      "key": "irssi_use_full_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow the Irssi IRC Client to connect to any port, and to bind to any unreserved port."
+    },
+    {
+      "key": "keepalived_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether keepalived can connect to all TCP ports."
+    },
+    {
+      "key": "logwatch_can_network_connect_mail",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether logwatch can connect to mail over the network."
+    },
+    {
+      "key": "lsmd_plugin_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether lsmd_plugin can connect to all TCP ports."
+    },
+    {
+      "key": "mozilla_plugin_bind_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow mozilla plugin domain to bind unreserved tcp/udp ports."
+    },
+    {
+      "key": "mozilla_plugin_can_network_connect",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow mozilla plugin domain to connect to the network using TCP."
+    },
+    {
+      "key": "mplayer_execstack",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether mplayer can make its stack executable"
+    },
+    {
+      "key": "mysql_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow mysqld to connect to all ports"
+    },
+    {
+      "key": "mysql_connect_http",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow mysqld to connect to http port"
+    },
+    {
+      "key": "named_tcp_bind_http_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether Bind can bind tcp socket to http ports."
+    },
+    {
+      "key": "neutron_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether neutron can connect to all TCP ports"
+    },
+    {
+      "key": "nfs_export_all_ro",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow nfs to export all read only."
+    },
+    {
+      "key": "nfs_export_all_rw",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow nfs to export all read/write"
+    },
+    {
+      "key": "nfsd_anon_write",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "NFS ###"
+    },
+    {
+      "key": "openfortivpn_can_network_connect",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Determine whether openfortivpn can connect to the TCP network."
+    },
+    {
+      "key": "openvpn_can_network_connect",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Determine whether openvpn can connect to the TCP network."
+    },
+    {
+      "key": "pcp_bind_all_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow pcp to bind to all unreserved_ports"
+    },
+    {
+      "key": "pdns_can_network_connect_db",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow PowerDNS to connect to databases over the network."
+    },
+    {
+      "key": "piranha_lvs_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow piranha-lvs domain to connect to the network using TCP."
+    },
+    {
+      "key": "polipo_connect_all_unreserved",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow polipo to connect to all ports > 1023"
+    },
+    {
+      "key": "polipo_session_bind_all_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether Polipo session daemon can bind tcp sockets to all unreserved ports."
+    },
+    {
+      "key": "privoxy_connect_any",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Determine whether privoxy can connect to all tcp ports."
+    },
+    {
+      "key": "prosody_bind_http_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Permit to prosody to bind apache port. Need to be activated to use BOSH."
+    },
+    {
+      "key": "rngd_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow rngd_t domain to use executable memory"
+    },
+    {
+      "key": "rsync_export_all_ro",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Rsync ###"
+    },
+    {
+      "key": "samba_enable_home_dirs",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to share users home directories."
+    },
+    {
+      "key": "samba_export_all_ro",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to export all read only."
+    },
+    {
+      "key": "samba_export_all_rw",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to export all read/write"
+    },
+    {
+      "key": "samba_portmapper",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to act as a portmapper"
+    },
+    {
+      "key": "samba_share_fusefs",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to export ntfs/fusefs volumes."
+    },
+    {
+      "key": "samba_share_nfs",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow samba to export NFS volumes."
+    },
+    {
+      "key": "selinuxuser_execheap",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow unconfined executables to make their heap memory executable. Doing this is a really bad idea. Probably indicates a badly coded executable, but could indicate an attack. This executable should be reported in bugzilla"
+    },
+    {
+      "key": "selinuxuser_execmod",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow all unconfined executables to use libraries requiring text relocation that are not labeled textrel_shlib_t"
+    },
+    {
+      "key": "selinuxuser_execstack",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow unconfined executables to make their stack executable. This should never, ever be necessary. Probably indicates a badly coded executable, but could indicate an attack. This executable should be reported in bugzilla"
+    },
+    {
+      "key": "selinuxuser_mysql_connect_enabled",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow users to connect to the local mysql server"
+    },
+    {
+      "key": "selinuxuser_postgresql_connect_enabled",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow users to connect to PostgreSQL"
+    },
+    {
+      "key": "selinuxuser_tcp_server",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow users to run TCP servers (bind to ports and accept connection from the same domain and outside users) disabling this forces FTP passive mode and may change other protocols."
+    },
+    {
+      "key": "selinuxuser_udp_server",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow users to run UDP servers (bind to ports and accept connection from the same domain and outside users) disabling this may break avahi discovering services on the network and other udp related services."
+    },
+    {
+      "key": "sge_domain_can_network_connect",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow sge to connect to the network using any TCP port"
+    },
+    {
+      "key": "smbd_anon_write",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Samba ###"
+    },
+    {
+      "key": "spamassassin_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow user spamassassin clients to use the network."
+    },
+    {
+      "key": "spamd_update_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow spamd_update to connect to all ports."
+    },
+    {
+      "key": "squid_bind_snmp_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether squid should have access to snmp port."
+    },
+    {
+      "key": "squid_connect_any",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Determine whether squid can connect to all TCP ports."
+    },
+    {
+      "key": "sslh_can_bind_any_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether sslh can listen on any tcp port or if it is restricted to the standard http."
+    },
+    {
+      "key": "sslh_can_connect_any_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether sslh can connect to any tcp port or if it is restricted to the standard http, openvpn and jabber ports."
+    },
+    {
+      "key": "sssd_connect_all_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow sssd connect to all unreserved ports"
+    },
+    {
+      "key": "swift_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether swift can connect to all TCP ports"
+    },
+    {
+      "key": "systemd_socket_proxyd_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow systemd-socket-proxyd to connect to any port instead of labelled ones."
+    },
+    {
+      "key": "telepathy_connect_all_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow the Telepathy connection managers to connect to any network port."
+    },
+    {
+      "key": "telepathy_tcp_connect_generic_network_ports",
+      "expect": "off",
+      "severity": "medium",
+      "rationale": "Allow the Telepathy connection managers to connect to any generic TCP port."
+    },
+    {
+      "key": "tomcat_can_network_connect_db",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow tomcat to connect to databases over the network."
+    },
+    {
+      "key": "tomcat_use_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow tomcat to use executable memory and executable stack"
+    },
+    {
+      "key": "tor_bind_all_unreserved_ports",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether tor can bind tcp sockets to all unreserved ports."
+    },
+    {
+      "key": "tor_can_network_relay",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow tor to act as a relay"
+    },
+    {
+      "key": "varnishd_connect_any",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether varnishd can use the full TCP network."
+    },
+    {
+      "key": "virt_use_comm",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow confined virtual guests to use serial/parallel communication ports"
+    },
+    {
+      "key": "virt_use_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allow confined virtual guests to use executable memory and executable stack"
+    },
+    {
+      "key": "xdm_bind_vnc_tcp_port",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allows xdm_t to bind on vnc_port_t"
+    },
+    {
+      "key": "xserver_execmem",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Allows XServer to execute writable memory"
+    },
+    {
+      "key": "zabbix_can_network",
+      "expect": "off",
+      "severity": "low",
+      "rationale": "Determine whether zabbix can connect to all TCP ports"
+    }
+  ]
+}
