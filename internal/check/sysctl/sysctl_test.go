@@ -46,3 +46,14 @@ func TestEvaluate(t *testing.T) {
 		})
 	}
 }
+
+// Live procfs: tells whether the worker count in check.MapAll is right.
+func BenchmarkEvaluateLive(b *testing.B) {
+	checks := baseline.Sysctl()
+	linux := host.NewLinux()
+	b.ReportAllocs()
+
+	for b.Loop() {
+		Evaluate(checks, linux)
+	}
+}

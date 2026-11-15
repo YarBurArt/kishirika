@@ -68,3 +68,13 @@ func TestState(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkEvaluateLive(b *testing.B) {
+	checks := baseline.SELinux()
+	linux := host.NewLinux()
+	b.ReportAllocs()
+
+	for b.Loop() {
+		Evaluate(checks, linux, nil)
+	}
+}
