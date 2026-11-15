@@ -10,10 +10,14 @@ import (
 
 const Family = "selinux"
 
-func Evaluate(checks []baseline.SELinuxCheck, r host.Reader) []check.Finding {
-	return check.MapAll(checks, func(c baseline.SELinuxCheck) check.Finding {
+// The +2 keeps the state pair from reallocating the boolean findings.
+func Evaluate(checks []baseline.SELinuxCheck, r host.Reader, state *host.SELinux) []check.Finding {
+	findings := make([]check.Finding, 0, len(checks)+2)
+	findings = append(findings, stateFindings(state)...)
+
+	return append(findings, check.MapAll(checks, func(c baseline.SELinuxCheck) check.Finding {
 		return evaluateOne(c, r)
-	})
+	})...)
 }
 
 func evaluateOne(c baseline.SELinuxCheck, r host.Reader) check.Finding {
@@ -25,25 +29,75 @@ func evaluateOne(c baseline.SELinuxCheck, r host.Reader) check.Finding {
 		Rationale: c.Rationale,
 	}
 
-	value, err := r.Boolean(c.Key)
+	current, pending, err := r.Boolean(c.Key)
 	if err != nil {
 		f.Status = check.Skip
 		f.Reason = reason(err)
 		return f
 	}
 
-	if value {
-		f.Actual = "on"
-	} else {
-		f.Actual = "off"
-	}
-
-	if f.Actual == c.Expect {
-		f.Status = check.Pass
-	} else {
+	f.Actual = onOff(current)
+	switch {
+	case f.Actual != c.Expect:
 		f.Status = check.Fail
+	case pending != current:
+		// flipped with setsebool and no -P, so the policy still holds the old value
+		f.Status = check.Fail
+		f.Reason = "reverts at the next policy load"
+	default:
+		f.Status = check.Pass
 	}
 	return f
+}
+
+// What no boolean file holds: the runtime mode against the config, and the
+// policy name the next boot would load.
+func stateFindings(s *host.SELinux) []check.Finding {
+	if s == nil {
+		return nil
+	}
+
+	mode := check.Finding{
+		Family:    Family,
+		Key:       "mode",
+		Expect:    s.Config,
+		Actual:    s.Mode,
+		Severity:  check.High,
+		Rationale: "A permissive kernel lets an exploit through whatever the policy says.",
+	}
+	switch {
+	case s.Config == "":
+		mode.Status = check.Skip
+		mode.Reason = "no /etc/selinux/config"
+	case s.Mode == s.Config:
+		mode.Status = check.Pass
+	default:
+		mode.Status = check.Fail
+	}
+
+	policy := check.Finding{
+		Family:    Family,
+		Key:       "policy",
+		Expect:    "set",
+		Actual:    s.Policy,
+		Severity:  check.Medium,
+		Rationale: "Without a policy name the next boot loads no policy at all.",
+	}
+	if s.Policy == "" {
+		policy.Status = check.Fail
+		policy.Reason = "SELINUXTYPE missing"
+	} else {
+		policy.Status = check.Pass
+	}
+
+	return []check.Finding{mode, policy}
+}
+
+func onOff(value bool) string {
+	if value {
+		return "on"
+	}
+	return "off"
 }
 
 func reason(err error) string {

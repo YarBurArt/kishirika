@@ -23,7 +23,7 @@ const changeLogTimeout = 10 * time.Second
 
 type Reader interface {
 	Sysctl(key string) (string, error)
-	Boolean(name string) (bool, error)
+	Boolean(name string) (current, pending bool, err error)
 }
 
 type Linux struct {
@@ -65,6 +65,7 @@ type Info struct {
 
 type SELinux struct {
 	Mode   string `json:"mode"`
+	Config string `json:"config"`
 	Policy string `json:"policy"`
 }
 
@@ -115,17 +116,34 @@ func (l *Linux) Sysctl(key string) (string, error) {
 	return l.readFile(filepath.Join(l.SysctlRoot, strings.ReplaceAll(key, ".", "/")))
 }
 
-// Boolean reads the first field: selinuxfs writes "current pending".
-func (l *Linux) Boolean(name string) (bool, error) {
+// selinuxfs writes "current pending", and pending is only what the next policy
+// load applies: a difference means the change was never written to the policy.
+func (l *Linux) Boolean(name string) (current, pending bool, err error) {
 	raw, err := l.readFile(filepath.Join(l.BooleanRoot, name))
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
-	fields := strings.Fields(raw)
-	if len(fields) == 0 {
-		return false, ErrAbsent
+
+	now, rest, ok := cutField(raw)
+	if !ok {
+		return false, false, ErrAbsent
 	}
-	return fields[0] == "1", nil
+	later, _, ok := cutField(rest)
+	if !ok {
+		later = now // a kernel that writes one field only has nothing pending
+	}
+	return now == "1", later == "1", nil
+}
+
+func cutField(s string) (field, rest string, ok bool) {
+	s = strings.TrimLeft(s, " ")
+	if s == "" {
+		return "", "", false
+	}
+	if i := strings.IndexByte(s, ' '); i >= 0 {
+		return s[:i], s[i+1:], true
+	}
+	return s, "", true
 }
 
 func (l *Linux) SysctlAvailable() bool {
@@ -141,7 +159,9 @@ func (l *Linux) SelinuxAvailable() bool {
 func (l *Linux) selinux() *SELinux {
 	out := &SELinux{}
 	if raw, err := os.ReadFile(l.SELinuxConfig); err == nil {
-		out.Policy = keyValue(string(raw), "SELINUXTYPE")
+		config := string(raw)
+		out.Config = keyValue(config, "SELINUX")
+		out.Policy = keyValue(config, "SELINUXTYPE")
 	}
 
 	mode, err := l.readFile(filepath.Join(l.SELinuxRoot, "enforce"))

@@ -84,8 +84,19 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 	}
 	if wantSelinux {
 		jobs = append(jobs, func() check.Family {
-			return family(linux.SelinuxAvailable(), linux.BooleanRoot, "selinuxfs", selinux.Family,
-				func() []check.Finding { return selinux.Evaluate(baseline.SELinux(), linux) })
+			// the state findings stand without selinuxfs, which is exactly the
+			// case where the kernel booted without SELinux
+			if !linux.SelinuxAvailable() && info.SELinux == nil {
+				return check.Family{Name: selinux.Family, Reason: linux.BooleanRoot + " not mounted"}
+			}
+			checks := baseline.SELinux()
+			if !linux.SelinuxAvailable() {
+				checks = nil
+			}
+			return check.Family{
+				Name: selinux.Family, Ran: true,
+				Findings: selinux.Evaluate(checks, linux, info.SELinux),
+			}
 		})
 	}
 

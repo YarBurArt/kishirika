@@ -18,7 +18,7 @@ func (f fakeReader) Sysctl(key string) (string, error) {
 	return value, nil
 }
 
-func (f fakeReader) Boolean(string) (bool, error) { return false, host.ErrAbsent }
+func (f fakeReader) Boolean(string) (bool, bool, error) { return false, false, host.ErrAbsent }
 
 func TestEvaluate(t *testing.T) {
 	two := int64(2)

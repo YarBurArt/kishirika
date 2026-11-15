@@ -8,14 +8,14 @@ import (
 	"github.com/YarBurArt/kishirika/internal/host"
 )
 
-type fakeReader map[string]bool
+type fakeReader map[string][2]bool
 
-func (f fakeReader) Boolean(name string) (bool, error) {
-	value, ok := f[name]
+func (f fakeReader) Boolean(name string) (current, pending bool, err error) {
+	pair, ok := f[name]
 	if !ok {
-		return false, host.ErrAbsent
+		return false, false, host.ErrAbsent
 	}
-	return value, nil
+	return pair[0], pair[1], nil
 }
 
 func (f fakeReader) Sysctl(string) (string, error) { return "", host.ErrAbsent }
@@ -27,14 +27,14 @@ func TestEvaluate(t *testing.T) {
 		reader fakeReader
 		want   check.Status
 	}{
-		"off fails":    {fakeReader{"deny_ptrace": false}, check.Fail},
-		"on passes":    {fakeReader{"deny_ptrace": true}, check.Pass},
+		"off fails":    {fakeReader{"deny_ptrace": {false, false}}, check.Fail},
+		"on passes":    {fakeReader{"deny_ptrace": {true, true}}, check.Pass},
 		"absent skips": {fakeReader{}, check.Skip},
 	}
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			findings := Evaluate([]baseline.SELinuxCheck{item}, tc.reader)
+			findings := Evaluate([]baseline.SELinuxCheck{item}, tc.reader, nil)
 			if len(findings) != 1 || findings[0].Status != tc.want {
 				t.Fatalf("findings = %+v, want one %q", findings, tc.want)
 			}
