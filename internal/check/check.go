@@ -2,7 +2,7 @@ package check
 
 import (
 	"runtime"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -128,7 +128,12 @@ func (r Result) Counts() Counts {
 }
 
 func (r Result) Findings() []Finding {
-	out := make([]Finding, 0, 128)
+	total := 0
+	for _, fam := range r.Families {
+		total += len(fam.Findings)
+	}
+
+	out := make([]Finding, 0, total)
 	for _, fam := range r.Families {
 		out = append(out, fam.Findings...)
 	}
@@ -145,11 +150,11 @@ func (r Result) AnyRan() bool {
 	return false
 }
 
-// MapAll reads in parallel and writes results by index, so the output order
-// stays fixed.
+// Writes results by index so the output order stays fixed. Eight workers is
+// where the syscall-bound reads stop scaling (benchmarked 4, 12, 16 and 32).
 func MapAll[T any](items []T, fn func(T) Finding) []Finding {
 	out := make([]Finding, len(items))
-	workers := min(runtime.GOMAXPROCS(0), 4, len(items))
+	workers := min(runtime.GOMAXPROCS(0), 8, len(items))
 	if workers < 2 {
 		for i, item := range items {
 			out[i] = fn(item)
@@ -173,16 +178,16 @@ func MapAll[T any](items []T, fn func(T) Finding) []Finding {
 	return out
 }
 
-// SortFindings keeps repeated runs byte-identical: family, then severity, then key.
+// Keeps repeated runs byte-identical. slices.SortFunc: sort.Slice reflects a
+// swapper and allocates it on every call.
 func SortFindings(findings []Finding) {
-	sort.Slice(findings, func(i, j int) bool {
-		a, b := findings[i], findings[j]
+	slices.SortFunc(findings, func(a, b Finding) int {
 		if a.Family != b.Family {
-			return a.Family < b.Family
+			return strings.Compare(a.Family, b.Family)
 		}
-		if a.Severity.Rank() != b.Severity.Rank() {
-			return a.Severity.Rank() > b.Severity.Rank()
+		if left, right := a.Severity.Rank(), b.Severity.Rank(); left != right {
+			return right - left
 		}
-		return a.Key < b.Key
+		return strings.Compare(a.Key, b.Key)
 	})
 }
