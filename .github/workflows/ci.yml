@@ -33,12 +33,12 @@ jobs:
           cache: true
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          # pinned to the v1 series: .golangci.yml uses the v1 schema
-          # (linters-settings / issues.exclude-rules), which v2 rejects
-          version: v1.64.8
-          install-mode: goinstall
+          # pinned to the v2 series: .golangci.yml uses the v2 schema
+          # (version: "2", formatters), which v1 rejects; v2 also reads the
+          # export data of the Go 1.27 toolchain, which v1 cannot
+          version: v2.15.0
           args: --timeout=3m
 
   semgrep:
