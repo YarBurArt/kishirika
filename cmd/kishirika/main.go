@@ -70,17 +70,6 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 		wantSysctl, wantSelinux = true, true
 	}
 
-	sysctlBase, err := baseline.LoadSysctl()
-	if err != nil {
-		fmt.Fprintf(stderr, "kishirika: %v\n", err)
-		return exitUsage
-	}
-	selinuxBase, err := baseline.LoadSELinux()
-	if err != nil {
-		fmt.Fprintf(stderr, "kishirika: %v\n", err)
-		return exitUsage
-	}
-
 	res := check.Result{
 		Host: check.Host{
 			Hostname: linux.Hostname(),
@@ -94,13 +83,13 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 	if wantSysctl {
 		jobs = append(jobs, func() check.Family {
 			return family(linux.SysctlAvailable(), linux.SysctlRoot, "procfs", sysctl.Family,
-				func() []check.Finding { return sysctl.Evaluate(sysctlBase, linux) })
+				func() []check.Finding { return sysctl.Evaluate(baseline.Sysctl(), linux) })
 		})
 	}
 	if wantSelinux {
 		jobs = append(jobs, func() check.Family {
 			return family(linux.SelinuxAvailable(), linux.BooleanRoot, "selinuxfs", selinux.Family,
-				func() []check.Finding { return selinux.Evaluate(selinuxBase, linux) })
+				func() []check.Finding { return selinux.Evaluate(baseline.SELinux(), linux) })
 		})
 	}
 
@@ -116,6 +105,8 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 	wg.Wait()
 
 	opt := report.Options{ToolVersion: toolVersion, Verbose: verbose, Now: time.Now()}
+
+	var err error
 	if *asJSON {
 		err = report.JSON(stdout, res, opt)
 	} else {

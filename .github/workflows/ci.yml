@@ -18,6 +18,11 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Check generated tables are current
+        run: |
+          go generate ./...
+          test -z "$(git status --porcelain)"
+
       - name: Run tests with race cond checks
         run: go test -v -race -p 1 -coverprofile=coverage.out ./...
 

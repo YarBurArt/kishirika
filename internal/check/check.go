@@ -1,7 +1,6 @@
 package check
 
 import (
-	"errors"
 	"runtime"
 	"sort"
 	"strconv"
@@ -29,11 +28,6 @@ const (
 
 var severityRank = map[Severity]int{Info: 0, Low: 1, Medium: 2, High: 3, Critical: 4}
 
-func (s Severity) Valid() bool {
-	_, ok := severityRank[s]
-	return ok
-}
-
 func (s Severity) Rank() int { return severityRank[s] }
 
 // Predicate is "not weaker than the baseline": >= accepts 2 where the profile
@@ -42,23 +36,6 @@ type Predicate struct {
 	Eq  *int64  `json:"eq,omitempty"`
 	In  []int64 `json:"in,omitempty"`
 	Gte *int64  `json:"gte,omitempty"`
-}
-
-func (p Predicate) Validate() error {
-	set := 0
-	if p.Eq != nil {
-		set++
-	}
-	if len(p.In) > 0 {
-		set++
-	}
-	if p.Gte != nil {
-		set++
-	}
-	if set != 1 {
-		return errors.New("expect must set exactly one of eq, in, gte")
-	}
-	return nil
 }
 
 func (p Predicate) Met(value int64) bool {
