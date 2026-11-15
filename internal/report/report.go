@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/YarBurArt/kishirika/internal/check"
+	"github.com/YarBurArt/kishirika/internal/host"
 )
 
 // SchemaVersion is the JSON contract; bump it on any breaking change.
@@ -23,13 +24,17 @@ type jsonResult struct {
 	SchemaVersion int             `json:"schema_version"`
 	ToolVersion   string          `json:"tool_version"`
 	GeneratedAt   time.Time       `json:"generated_at"`
-	Host          check.Host      `json:"host"`
+	Host          host.Info       `json:"host"`
 	Summary       check.Counts    `json:"summary"`
 	Families      []check.Family  `json:"families"`
 	Checks        []check.Finding `json:"checks"`
 }
 
-func Text(w io.Writer, res check.Result, opt Options) error {
+func Text(w io.Writer, res check.Result, info host.Info, opt Options) error {
+	if err := hostBlock(w, info); err != nil {
+		return err
+	}
+
 	printed := false
 	for _, fam := range res.Families {
 		visible := shown(fam.Findings, opt.Verbose)
@@ -71,12 +76,12 @@ func Text(w io.Writer, res check.Result, opt Options) error {
 	return tw.Flush()
 }
 
-func JSON(w io.Writer, res check.Result, opt Options) error {
+func JSON(w io.Writer, res check.Result, info host.Info, opt Options) error {
 	out := jsonResult{
 		SchemaVersion: SchemaVersion,
 		ToolVersion:   opt.ToolVersion,
 		GeneratedAt:   opt.Now.UTC(),
-		Host:          res.Host,
+		Host:          info,
 		Summary:       res.Counts(),
 		Families:      res.Families,
 		Checks:        res.Findings(),
@@ -84,6 +89,35 @@ func JSON(w io.Writer, res check.Result, opt Options) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	return enc.Encode(out)
+}
+
+// tabwriter holds the values in one column; the version string and cmdline stay
+// in --json where they can run to their full length.
+func hostBlock(w io.Writer, info host.Info) error {
+	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
+	fields := [...]struct{ label, value string }{
+		{"host", info.Hostname},
+		{"os", info.Distro},
+		{"kernel", info.Kernel},
+		{"arch", info.Arch},
+		{"built", stamp(info.BuildDate)},
+		{"selinux", info.SELinux.String()},
+	}
+
+	for _, field := range fields {
+		if field.value != "" {
+			fmt.Fprintf(tw, "%s	%s\n", field.label, field.value)
+		}
+	}
+	fmt.Fprintln(tw)
+	return tw.Flush()
+}
+
+func stamp(at time.Time) string {
+	if at.IsZero() {
+		return ""
+	}
+	return at.Format("2006-01-02 15:04:05 MST")
 }
 
 func shown(findings []check.Finding, verbose bool) []check.Finding {

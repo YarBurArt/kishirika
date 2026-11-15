@@ -82,12 +82,6 @@ type Finding struct {
 	Rationale string   `json:"rationale,omitempty"`
 }
 
-type Host struct {
-	Hostname string `json:"hostname"`
-	Kernel   string `json:"kernel"`
-	OS       string `json:"os"`
-}
-
 type Family struct {
 	Name     string    `json:"name"`
 	Ran      bool      `json:"ran"`
@@ -96,7 +90,6 @@ type Family struct {
 }
 
 type Result struct {
-	Host     Host
 	Families []Family
 }
 

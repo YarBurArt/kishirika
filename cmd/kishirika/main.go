@@ -70,13 +70,9 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 		wantSysctl, wantSelinux = true, true
 	}
 
-	res := check.Result{
-		Host: check.Host{
-			Hostname: linux.Hostname(),
-			Kernel:   linux.Kernel(),
-			OS:       linux.OS(),
-		},
-	}
+	info := linux.Info()
+
+	var res check.Result
 
 	// the two families share nothing but the reader, so they run side by side
 	jobs := make([]func() check.Family, 0, 2)
@@ -108,9 +104,9 @@ func runWith(args []string, stdout, stderr io.Writer, linux *host.Linux) int {
 
 	var err error
 	if *asJSON {
-		err = report.JSON(stdout, res, opt)
+		err = report.JSON(stdout, res, info, opt)
 	} else {
-		err = report.Text(stdout, res, opt)
+		err = report.Text(stdout, res, info, opt)
 	}
 	if err != nil {
 		fmt.Fprintf(stderr, "kishirika: %v\n", err)
