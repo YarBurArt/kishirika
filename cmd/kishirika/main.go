@@ -16,7 +16,8 @@ import (
 	"github.com/YarBurArt/kishirika/internal/report"
 )
 
-const toolVersion = "0.1.0"
+// the release workflow overrides this with -X main.toolVersion=<tag without v>
+var toolVersion = "0.1.0"
 
 const (
 	exitClean       = 0

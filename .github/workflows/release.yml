@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    # A v tag publishes a release; one with a hyphen, like v1.0.0-pre1, a
+    # pre-release.
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      # A tag can sit on a commit CI never saw, so the release repeats the gates.
+      - name: Check generated tables are current
+        run: |
+          go generate ./...
+          test -z "$(git status --porcelain)"
+
+      - name: Run tests with race cond checks
+        run: go test -race -p 1 ./...
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.15.0
+          args: --timeout=3m
+
+  build:
+    name: ${{ matrix.asset }}
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {asset: amd64, arch: amd64}
+          - {asset: 386, arch: 386}
+          - {asset: arm64, arch: arm64}
+          # armv7 is what every 32-bit distro still ships; v6 and v5 boards are
+          # better served by the source build.
+          - {asset: arm, arch: arm, goarm: "7"}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      # The tool is pure Go and reads procfs at run time, so one runner
+      # cross-builds all four instead of four runners building natively.
+      - name: Build
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: ${{ matrix.arch }}
+          GOARM: ${{ matrix.goarm }}
+        run: |
+          go build -trimpath -buildvcs=false \
+            -ldflags="-s -w -X main.toolVersion=${GITHUB_REF_NAME#v}" \
+            -o kishirika-${{ matrix.asset }} ./cmd/kishirika
+
+      - name: Check the binary is the target architecture
+        run: |
+          build=$(go version -m kishirika-${{ matrix.asset }})
+          echo "$build"
+          grep -q "GOARCH=${{ matrix.arch }}" <<< "$build"
+          [ -z "${{ matrix.goarm }}" ] || grep -q "GOARM=${{ matrix.goarm }}" <<< "$build"
+
+      - name: Run the native binary
+        if: matrix.arch == 'amd64'
+        run: |
+          out=$(./kishirika-amd64 --json || true)
+          grep -q "\"tool_version\": \"${GITHUB_REF_NAME#v}\"" <<< "$out"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: kishirika-${{ matrix.asset }}
+          path: kishirika-${{ matrix.asset }}
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum -- * > SHA256SUMS
+          ls -l
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          files: dist/*
